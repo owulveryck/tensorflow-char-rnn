@@ -78,6 +78,8 @@ def main():
         args.encoding = 'utf-8'
     args.vocab_file = os.path.join(args.init_dir, 'vocab.json')
     vocab_index_dict, index_vocab_dict, vocab_size = load_vocab(args.vocab_file, args.encoding)
+    print(vocab_index_dict)
+    print(index_vocab_dict)
 
     # Create graphs
     logging.info('Creating graph')
