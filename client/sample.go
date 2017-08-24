@@ -86,15 +86,22 @@ func main() {
 	for k, v := range vocabIndexDict {
 		indexVocabDict[v] = k
 	}
+	_, err = initGraph(s.BestModel)
+	if err != nil {
+		log.Fatal("Cannot initialize graph")
+	}
+}
+
+func initGraph(modelFile string) (*tf.Graph, error) {
 	// Creating graph
 	// Construct an in-memory graph from the serialized form.
 	graph := tf.NewGraph()
 	log.Println(graph)
-	model, err := ioutil.ReadFile(s.BestModel)
+	model, err := ioutil.ReadFile(modelFile)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	if err := graph.Import(model, ""); err != nil {
-		log.Fatal(err)
-	}
+
+	err = graph.Import(model, "")
+	return graph, err
 }
