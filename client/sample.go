@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/kelseyhightower/envconfig"
+	tf "github.com/tensorflow/tensorflow/tensorflow/go"
 )
 
 const (
@@ -71,12 +73,12 @@ func main() {
 	var vocabIndexDict map[string]int
 	f, err = os.Open(vocabFile)
 	if err != nil {
-		log.Fatal("Cannot read result.json", err)
+		log.Fatal("Cannot read vocab.json", err)
 	}
 	dec = json.NewDecoder(f)
 	if err := dec.Decode(&vocabIndexDict); err != nil {
 		f.Close()
-		log.Fatal("result not valid", err)
+		log.Fatal("Invalid vocabulary", err)
 	}
 	f.Close()
 	vocabSize := len(vocabIndexDict)
@@ -84,5 +86,15 @@ func main() {
 	for k, v := range vocabIndexDict {
 		indexVocabDict[v] = k
 	}
-
+	// Creating graph
+	// Construct an in-memory graph from the serialized form.
+	graph := tf.NewGraph()
+	log.Println(graph)
+	model, err := ioutil.ReadFile(s.BestModel)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := graph.Import(model, ""); err != nil {
+		log.Fatal(err)
+	}
 }
